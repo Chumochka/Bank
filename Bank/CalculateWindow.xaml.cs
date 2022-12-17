@@ -26,7 +26,7 @@ namespace Bank
 
         private void btnCompare_Click(object sender, RoutedEventArgs e)
         {
-            CompareWindow form = new CompareWindow();
+            CompareWindow form = new CompareWindow(Convert.ToInt32(tb_sum.Text),"8,85 %","6,1 %", "5,55 %",Convert.ToInt32(tbl_stab_result.Text), Convert.ToInt32(tbl_opt_result.Text),Convert.ToInt32(tbl_standart_result.Text));
             form.Show();
             this.Close();
         }
@@ -116,37 +116,29 @@ namespace Bank
 
         private void tb_sum_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string[] words = tb_sum.Text.Split(new[] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
-            string text = String.Join("", words);
-            int sum = Convert.ToInt32(text);
-            if (sl_sum != null)
+            try
             {
-                if (text == "")
+                string[] words = tb_sum.Text.Split(new[] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
+                string text = String.Join("", words);
+                int sum = Convert.ToInt32(text);
+                if (sl_sum != null)
                 {
-                    sl_sum.Value = 0;
+                    if (text == "")
+                    {
+                        sl_sum.Value = 0;
+                    }
+                    else
+                    {
+                        sl_sum.Value = sum;
+                    }
                 }
-                else
-                {
-                    sl_sum.Value = sum;
-                }
+                calculate_result();
             }
-            calculate_result();
-            /*int srok = 12;
-            if(tb_srok != null)
+            catch (FormatException)
             {
-                srok = Convert.ToInt32(tb_srok.Text);
+
             }
-            int popoln = 0;
-            if (tb_popoln != null)
-            {
-                popoln = Convert.ToInt32(tb_popoln.Text);
-            }
-            int stab_dohod = (int)Math.Round(sum * 0.08 * srok / 12);
-            tbl_stab_result.Text = stab_dohod.ToString();
-            int optimal_dohod = (int)Math.Round(sum*Math.Pow(1+0.05/12,12) - sum);
-            tbl_opt_result.Text = optimal_dohod.ToString();
-            int standart_dohod = (int)Math.Round(sum * Math.Pow(1 + 0.06 / 12, 12) - sum);
-            tbl_standart_result.Text = standart_dohod.ToString();*/
+            
         }
 
         private void sl_srok_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -161,60 +153,90 @@ namespace Bank
 
         private void tb_srok_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string[] words = tb_srok.Text.Split(new[] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
-            string text = String.Join("", words);
-            int srok = Convert.ToInt32(text);
-            if (sl_srok != null)
+            try
             {
-                if (text == "")
+                string[] words = tb_srok.Text.Split(new[] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
+                string text = String.Join("", words);
+                int srok = Convert.ToInt32(text);
+                if (sl_srok != null)
                 {
-                    sl_srok.Value = 0;
+                    if (text == "")
+                    {
+                        sl_srok.Value = 0;
+                    }
+                    else
+                    {
+                        sl_srok.Value = srok;
+                    }
                 }
-                else
-                {
-                    sl_srok.Value = srok;
-                }
+                calculate_result();
             }
-            calculate_result();
+            catch (FormatException)
+            {
+
+            }
+            
         }
 
         private void tb_popoln_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string[] words = tb_popoln.Text.Split(new[] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
-            string text = String.Join("", words);
-            int popoln = Convert.ToInt32(text);
-            if (sl_popoln != null)
+            try
             {
-                if (text == "")
+                string[] words = tb_popoln.Text.Split(new[] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
+                string text = String.Join("", words);
+                int popoln = Convert.ToInt32(text);
+                if (sl_popoln != null)
                 {
-                    sl_popoln.Value = 0;
+                    if (text == "")
+                    {
+                        sl_popoln.Value = 0;
+                    }
+                    else
+                    {
+                        sl_popoln.Value = popoln;
+                    }
                 }
-                else
-                {
-                    sl_popoln.Value = popoln;
-                }
+                calculate_result();
             }
-            calculate_result();
+            catch (FormatException)
+            {
+
+            }
+            
         }
         private void calculate_result()
         {
-            int sum = Convert.ToInt32(tb_sum.Text);
-            int srok = 12;
-            if (tb_srok != null)
+            try
             {
-                srok = Convert.ToInt32(tb_srok.Text);
+                int sum = Convert.ToInt32(tb_sum.Text);
+                int srok = 12;
+                if (tb_srok != null)
+                {
+                    srok = Convert.ToInt32(tb_srok.Text);
+                }
+                int popoln = 0;
+                if(tb_popoln != null)
+                {
+                    popoln = Convert.ToInt32(tb_popoln.Text);
+                }
+                int stab_dohod = (int)Math.Round(sum * 0.0885 * srok/12);
+                tbl_stab_result.Text = stab_dohod.ToString();
+                int optimal_dohod = (int)Math.Round(sum * Math.Pow(1 + 0.061 / 12, srok) - sum + srok*popoln);
+                tbl_opt_result.Text = optimal_dohod.ToString();
+                double standart_dohod = Math.Round(sum * 0.061);
+                for (int i = 0; i < srok; i++)
+                {
+                    standart_dohod = standart_dohod + popoln;
+                    standart_dohod = standart_dohod + Math.Round(standart_dohod * 0.0655);
+                }
+                standart_dohod = (int)standart_dohod*srok/24;
+                tbl_standart_result.Text = standart_dohod.ToString();
             }
-            int popoln = 0;
-            if(tb_popoln != null)
+            catch (FormatException)
             {
-                popoln = Convert.ToInt32(tb_popoln.Text);
+
             }
-            int stab_dohod = (int)Math.Round(sum * 0.08 * srok / 12);
-            tbl_stab_result.Text = stab_dohod.ToString();
-            int optimal_dohod = (int)Math.Round(sum * Math.Pow(1 + 0.05 / 12, 12) - sum);
-            tbl_opt_result.Text = optimal_dohod.ToString();
-            int standart_dohod = (int)Math.Round(sum * Math.Pow(1 + 0.06 / 12, 12) - sum);
-            tbl_standart_result.Text = standart_dohod.ToString();
+            
         }
     }
 }
